@@ -1,0 +1,240 @@
+﻿@model object
+@using Kaspid.Models
+@using Kaspid.Models.Utility
+@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_Inside.cshtml";
+    IEnumerable<object> ProductGroups = ViewData["Group"] as IEnumerable<object>;
+    IEnumerable<object> Offers = ViewData["Offers"] as IEnumerable<object>;
+    int price1 = 0;
+    decimal discount = 0;
+    decimal rate = 0;
+    int temp = 0;
+    Kaspid.Models.DalEntities db = new Kaspid.Models.DalEntities();
+    List<Banner> banners = ViewData["InnerBanner"] as List<Banner>;
+}
+
+
+@section Title{
+    <title>@ViewBag.CmsPage.PageTitle</title>
+    <meta name="description" content="@ViewBag.CmsPage.PageDescription" />
+    <meta name="DC.subject" content="@ViewBag.CmsPage.PageDCSubject" />
+    <link rel="canonical" href="@SiteUtility.SiteRoot@Request.RawUrl" />
+    <meta property="og:title" content="@ViewBag.CmsPage.PageTitle" />
+    <meta property="og:site_name" content="@SiteUtility.SiteName" />
+    <meta property="og:description" content="@ViewBag.CmsPage.PageDescription" />
+    <meta property="og:image" content="@SiteUtility.SiteLogo" />
+}
+
+@section head{
+    <link href="~/StoreFilter/TMpaging.css" rel="stylesheet" />
+    <link href="~/Content/css/others.css" rel="stylesheet" />
+}
+
+@section BreadCrumb{
+
+    @Html.Raw(ViewBag.BreadcrumbList)
+}
+
+@section H1{
+    @ViewBag.CmsPage.Title
+}
+<div class=" main">
+    <div class="products-list-page">
+        <div class="products-list-r">
+            <div class="public-box">
+                <span>بر اساس دسته‌بندی</span>
+                <ul>
+                    @foreach (object item in ProductGroups)
+                    {
+                        <li>
+                            <a href="@SiteUtility.SiteRoot1@Url.Action("list",new { title = Function.InsTitleUrl(item.Prop("Title"),item.Prop("TitleURL")) })/">@item.Prop("Title") (@item.Prop("CountProduct"))</a>
+                        </li>
+                    }
+                </ul>
+            </div>
+            <div class="public-box">
+                <span>بر اساس قیمت</span>
+                <div class="rangeOverlay">
+                    <div id="rangeSlider"></div>
+                    <div class="rangeValue">
+                        <div class="rangeValue_box">
+
+                            <input class="txt rangeMin" />
+                            <span class="lbl">تومان</span>
+
+                        </div>
+                        <div class="rangeValue_box">
+
+                            <input class="txt rangeMax" />
+                            <span class="lbl">تومان</span>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @if (((IEnumerable<object>)TempData["Brand"]).Count() > 0)
+            {
+                <div class="public-box filter-box">
+                    <span>
+                        بر اساس برند
+                    </span>
+                    <ul class="filter-group TMfilter TMColorFilter ulchklist " data-search="brandfilter">
+                        @foreach (object brand in (IEnumerable<object>)TempData["Brand"])
+                        {
+                            <li>
+                                <input type="checkbox" class="checkfilter TMCheakBox" data-id="brands-@brand.Prop("Id")" />
+                                <h2>@brand.Prop("Title") <label>(@brand.Prop("Count"))</label></h2>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+            @Html.Partial("~/Views/Filter/dynamiclistfilter.cshtml", (int)ViewBag.ProductgroupId)
+         
+            <div class="stock-box">
+                <input type="checkbox" class="stockcheck" />
+                <span>فقط کالاهای موجود</span>
+
+                <ul class="TMfilter TMColorFilter ulchklist kala ">
+                    <li>
+                        <a data-id="instore-1" class="TMCheakBox">
+                            <span class="chkName">فقط کالاهای موجود</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="banner-list">
+                <ul>
+                    @foreach (var item in banners.Where(p => Request.RawUrl.ToLower().Trim().Contains(p.AddressPage.ToLower().Trim())))
+                    {
+                        if (item.PageType == (byte)AllEnums.BannerPageType.NoLink)
+                        {
+                            <li>
+                                <a>
+                                    <img src="@SiteUtility.SiteRoot1@Function.InsNoPic(item.PictureFlash, "/Content/images/nopic.jpg")" alt="@item.Title" />
+                                </a>
+                            </li>
+                        }
+                        else if (item.PageType == (byte)AllEnums.BannerPageType.NewPage)
+                        {
+                            <li>
+                                <a href="@SiteUtility.SiteRoot1@Url.Action("Index","Banner", new { id = item.Id, title = item.Title.Trim().ToLower().Replace(" ", "-") })">
+                                    <img src="@SiteUtility.SiteRoot1@Function.InsNoPic(item.PictureFlash, "/Content/images/nopic.jpg")" alt="@item.Title" />
+                                </a>
+                            </li>
+                        }
+                        else if (item.PageType == (byte)AllEnums.BannerPageType.NewAddress)
+                        {
+                            <li>
+                                <a href="@item.URL" target="_blank" rel="nofollow">
+                                    <img src="@SiteUtility.SiteRoot1@Function.InsNoPic(item.PictureFlash, "/Content/images/nopic.jpg")" alt="@item.Title" />
+                                </a>
+                            </li>
+                        }
+                    }
+                  
+                </ul>
+            </div>
+        </div>
+        <div class="products-list-l">
+            <div class="@(ViewBag.CmsPage.Picture!=null ? "products-list-l-banner":"hidden")">
+                <figure><img src="@SiteUtility.SiteRoot/@ViewBag.CmsPage.Picture" alt="@ViewBag.CmsPage.Title" /></figure>
+                <figcaption><h2>@ViewBag.CmsPage.Title</h2></figcaption>
+            </div>
+            <div class="products-list-l-pro-cat">
+                <span>مرتب سازی بر اساس :</span>
+                <ul class="ulSortList">
+                    <li>
+                        <a data-id="sortby-5" class="TMTab">پرفروش ترین</a>
+                    </li>
+                    <li>
+                        <a data-id="sortby-6" class="TMTab">پربازدیدترین</a>
+                    </li>
+                    <li>
+                        <a data-id="sortby-3" class="active TMTab">جدیدترین</a>
+                    </li>
+                    <li>
+                        <a data-id="sortby-3" class="TMTab">ارزان ترین</a>
+                    </li>
+                    <li>
+                        <a data-id="sortby-4" class="TMTab">گران ترین</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="products-list-l-ul" id="_product_filter">
+
+            </div>
+            <div class="pagination-container hidden">
+                <ul class="pagination">
+                    <li class="PagedList-skipToPrevious"> </li>
+                    <li c>
+                        <a>1</a>
+                    </li>
+                    <li class="active">
+                        <a>2</a>
+                    </li>
+                    <li>
+                        <a>3</a>
+                    </li>
+
+                    <li class="PagedList-skipToNext">  </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="public-box products-page-bottom">
+        <ul class="products-page-bottom-list">
+            @Html.Raw(ViewBag.CmsPage.Description)
+        </ul>
+    </div>
+</div>
+<div class="storeLoader">
+    <div class="storeLoader_box">
+        <img src="/Content/images/logo.jpg">
+        <div class="gooey">
+            <span class="dot"></span>
+            <div class="dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts{
+
+    <script src="~/StoreFilter/rangevalue.js"></script>
+    <script src="~/StoreFilter/filter.js"></script>
+    <script src="/Content/js/product.js"></script>
+    <script>
+        $(".ulSortList li a").click(function () {
+            $(".ulSortList li a").removeClass('active');
+            $(this).addClass('active');
+        });
+        $(document).ready(function () {
+            //---- range value ----
+            var maxnum = [2000, 5259832]
+            var rangeSlider = document.getElementById('rangeSlider');
+            noUiSlider.create(rangeSlider, {
+                direction: 'rtl',
+                start: [102200, 3259832],
+                range: { 'min': maxnum[0], 'max': maxnum[1] },
+                connect: true,
+                format: wNumb({ decimals: 0, thousand: '.', }),
+            });
+            rangeSlider.noUiSlider.on('update', function (values, handle) {
+                console.log(values[1].replace('.', ''))
+                $(".rangeValue").find('.rangeMin').val(values[0]);
+                $(".rangeValue").find('.rangeMax').val(values[1]);
+            });
+            rangeSlider.noUiSlider.on('end', function (values, handle) {
+
+            });
+        });
+    </script>
+}
+
+
+

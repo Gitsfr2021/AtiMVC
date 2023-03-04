@@ -1,0 +1,19 @@
+﻿@model Kaspid.Models.AlertStock
+
+        <ul>
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(model => model.ProductColorId)
+            @Html.ValidationSummary(false, "", new { @style = "color: red;font-size: 11px;" })
+            <li>
+                <p>اطلاع در زمان موجود شدن</p>
+            </li>
+                <p>از طریق : </p>
+                <li>
+                    @Html.CheckBoxFor(model => model.IsInbox, new { id = "IsInbox" })
+                    <label for='IsInbox' class="lbl">پروفایل</label>
+                </li>
+
+            <li class="submit ful-wids">
+                <button class="btn" type="submit" id="send-friends">ارسال</button>
+            </li>
+        </ul>

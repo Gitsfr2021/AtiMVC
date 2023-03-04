@@ -1,0 +1,85 @@
+﻿@model Kaspid.Models.Faq
+@using Kendo.Mvc.UI;
+@{
+    ViewBag.Title = "ویرایش پرسش محصول";
+    Layout = "~/Areas/admin/Views/Shared/_Inside.cshtml";
+}
+@section Breadcrumb{
+    @ViewBag.Title
+}
+@section H1{
+    @ViewBag.Title
+}
+
+<div class="hiddend hidden-fields">
+</div>
+@using (Html.BeginForm())
+{
+    @Html.HiddenFor(model => model.ProductId)
+    @Html.HiddenFor(model => model.Id)
+    @Html.AntiForgeryToken()
+    <div class="wBox">
+        <h2 class="wTitle">ویرایش @Html.LabelFor(model => model.Question)  </h2>
+        <div class="wContent">
+            <div class="form">
+                <div class="alertdialog aColor2">
+                    <i class="mdi mdi-alert-circle"></i>
+                    <div class="msg">
+                        کاربر گرامی، پر کردن فیلدهای ستاره دار الزامی است.
+                        @Html.ValidationSummary(true,"")
+                    </div>
+                </div>
+                <div class="halfInput">
+                    <label>نویسنده<span class="red">*</span></label>
+                    @Html.EditorFor(model => model.Name,new { htmlAttributes = new { @class = "txt" } })
+                    <span class="alertError">@Html.ValidationMessageFor(model => model.Name,"")</span>
+                </div>
+                <div class="halfInput">
+                    <label>ایمیل <span class="red">*</span></label>
+                    @Html.EditorFor(model => model.Email,new { htmlAttributes = new { @class = "txt" } })
+                    <span class="alertError">@Html.ValidationMessageFor(model => model.Email,"")</span>
+                </div>
+                <div class="clear"></div>
+                <div class="halfInput">
+                    <label>سوال<span class="red">*</span></label>
+                    @Html.EditorFor(model => model.Question,new { htmlAttributes = new { @class = "txt" } })
+                    <span class="alertError">@Html.ValidationMessageFor(model => model.Question,"")</span>
+                </div>
+                <div class="halfInput">
+                    <div class="hRight">
+                        <label>ترتیب نمایش</label>
+                        @Html.EditorFor(model => model.ShowOrder,new { htmlAttributes = new { @class = "txt" } })
+                        <span class="alertError">@Html.ValidationMessageFor(model => model.ShowOrder,"")</span>
+                    </div>
+                    <div class="hLeft">
+                        <label>وضعیت</label>
+                        <div class="rdbholder">
+                            @foreach (int item in Enum.GetValues(typeof(AllEnums.Status)))
+                            {
+                                @Html.RadioButtonFor(model => model.Status,(byte)item,new { id = Enum.GetName(typeof(AllEnums.Status),item) })
+                                <label for=@Enum.GetName(typeof(AllEnums.Status),item)>@Html.Raw(EnumHelper<AllEnums.Status>.GetDescription(Enum.GetName(typeof(AllEnums.Status),item)))</label>
+                            }
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+                <div class="clear"></div>
+                <div class="halfInput">
+                    <label> پاسخ</label>
+                    @Html.TextAreaFor(model => model.Answer,new { @class = "txt" })
+                </div>
+                <div class="clear"></div>
+
+                <div class="btnHolder">
+                    <input type="submit" value="ثبت" class="btn1" />
+                    <a href="/admin/Product/Faqs/@Model.ProductId" class="btn3">انصراف</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+
+
+

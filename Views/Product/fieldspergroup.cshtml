@@ -1,0 +1,60 @@
+﻿@using Kaspid.Models.Utility;
+@model object
+
+@foreach (object item in (IEnumerable<object>)Model)
+{
+    <li>
+        <span> @item.Prop("Title")</span>
+
+        @if (item.Prop("Type") == ((byte)Kaspid.Models.Utility.AllEnums.DynamicFieldType.Text).ToString() || item.Prop("Type") == ((byte)Kaspid.Models.Utility.AllEnums.DynamicFieldType.Floating).ToString())
+        {
+        <span>
+            @item.Prop("Value")
+        </span>
+    }
+    else if (item.Prop("Type") == ((byte)Kaspid.Models.Utility.AllEnums.DynamicFieldType.Integer).ToString())
+    {
+        <span>@item.Prop("Value")</span>
+
+    }
+
+    else if (item.Prop("Type") == ((byte)Kaspid.Models.Utility.AllEnums.DynamicFieldType.Boolean).ToString())
+    {
+        <span>
+            <input type="checkbox" name="chk_@item.Prop("Id")" id="chk_@item.Prop("Id")" @(item.Prop("Value") == "True" ? "checked" : "") />
+            <label for="chk_@item.Prop("Id")">فعال</label>
+        </span>
+    }
+    else if (item.Prop("Type") == ((byte)Kaspid.Models.Utility.AllEnums.DynamicFieldType.SingleItem).ToString())
+    {
+        string Name = "txt" + item.Prop("Id");
+        <span>
+            @foreach (object option in (IEnumerable<object>)item.Proplist("optins"))
+            {
+                if (item.Prop("Value") == option.Prop("Id"))
+                {
+
+                    <label>@option.Prop("Value"),</label>
+                }
+            }
+        </span>
+    }
+    else if (item.Prop("Type") == ((byte)Kaspid.Models.Utility.AllEnums.DynamicFieldType.MultiItem).ToString())
+    {
+        string Name = "txt" + item.Prop("Id");
+        string[] Result = item.Prop("Value").Split('#');
+        <span>
+            @foreach (object option in (IEnumerable<object>)item.Proplist("optins"))
+            {
+                if (Result.Contains(option.Prop("Id")))
+                {
+
+                    <label>@option.Prop("Value"),</label>
+
+                }
+
+            }
+        </span>
+    }
+        </li>
+    }

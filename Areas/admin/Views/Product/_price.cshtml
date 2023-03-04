@@ -1,0 +1,66 @@
+﻿
+@model List<Kaspid.Models.ProductColor>
+
+
+
+<!-- fixed item -->
+<ul class="tbl_list">
+    <li>
+        <label class="lbl">کد تنوع</label>
+    </li>
+    @*<li>
+            <label class="lbl">سایز</label>
+        </li>*@
+    <li>
+        <label class="lbl">رنگ</label>
+    </li>
+    <li>
+        <label class="lbl">موجودی</label>
+    </li>
+    <li>
+        <label class="lbl">حداقل موجودی</label>
+    </li>
+    <li>
+        <label class="lbl">قیمت</label>
+    </li>
+    <li>
+        <label class="lbl">تخفیف</label>
+    </li>
+</ul>
+<!-- End fixed item -->
+
+@using (Ajax.BeginForm("SaveColorList", "Product", FormMethod.Post, new AjaxOptions { HttpMethod = "POST", InsertionMode = InsertionMode.Replace, UpdateTargetId = "target" ,OnSuccess ="alert('عملیات با موفقیت انجام شد');$(this).parents('tr').next('.c-quick_view_list').slideToggle();"}))
+{
+    <div id="target">
+    </div>
+    for (int i = 0; i < Model.Count; i++)
+    {
+                @Html.HiddenFor(modelItem => Model[i].Id)
+        <ul class="tbl_list">
+            <li>
+                @Html.TextBoxFor(modelItem => Model[i].OtherCode, new { @class = "txt" })
+            </li>
+            <li>
+                <span class="color_product" style="--bg:@Model[i].Color.Code"></span>
+            </li>
+            <li>
+                @Html.TextBoxFor(modelItem => Model[i].Stock, new { @class = "txt", @type = "number" })
+            </li>
+            <li>
+                @Html.TextBoxFor(modelItem => Model[i].WarningPoint, new { @class = "txt", @type = "number" })
+            </li>
+            <li>
+                @Html.TextBoxFor(modelItem => Model[i].Price, new { @class = "txt", @type = "number" })
+            </li>
+            <li>
+                @Html.TextBoxFor(modelItem => Model[i].Discount, new { @class = "txt", @type = "number" })
+            </li>
+        </ul>
+    }
+    <input type="submit" value="ثبت تغییرات" class="btn1 js-close_list" />
+}
+<script src="@SiteUtility.SiteRoot1/Content/js/jquery-3.2.1.min.js"></script>
+<script src="@SiteUtility.SiteRoot1/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+<script src="@SiteUtility.SiteRoot1/Content/js/jquery.validate.min.js"></script>
+<script src="@SiteUtility.SiteRoot1/Content/js/jquery.validate.unobtrusive.min.js"></script>
+

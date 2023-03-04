@@ -1,0 +1,61 @@
+﻿@model Kaspid.Models.ProductGallery
+@{
+    ViewBag.Title = "تصویر جدید";
+    Layout = "~/Areas/admin/Views/Shared/_Inside.cshtml";
+}
+@section Breadcrumb{
+
+    <a href="/admin/Product/">@Html.Raw(ModulePageContent.Module("/admin/Product").Title)</a>
+    / <a href="/admin/Product/gallery/@Model.ProductId/">لیست اسلایدر تصاویر</a>
+    / @ViewBag.Title
+}
+@section H1{
+    @ViewBag.Title
+}
+@using (Html.BeginForm())
+{
+    <div class="hiddend hidden-fields">
+        @Html.HiddenFor(model => model.ProductId)
+        @Html.HiddenFor(model => model.ProductTitle)
+    </div>
+    @Html.AntiForgeryToken()
+    <div class="wBox">
+        <h2 class="wTitle">(@Html.DisplayFor(model => model.ProductTitle))  افزودن  </h2>
+        <div class="wContent">
+            <div class="form">
+                <div class="alertdialog aColor2">
+                    <i class="mdi mdi-alert-circle"></i>
+                    <div class="msg">
+                        کاربر گرامی، پر کردن فیلدهای ستاره دار الزامی است.
+                        @Html.ValidationSummary(true,"")
+                    </div>
+                </div>
+                <div class="halfInput">
+                    <label>عنوان<span class="red">*</span></label>
+                    @Html.EditorFor(model => model.Title,new { htmlAttributes = new { @class = "txt" } })
+                    <span class="alertError">@Html.ValidationMessageFor(model => model.Title,"")</span>
+                </div>
+                <div class="halfInput">
+                    <label>تصویر<span class="imgSize">سایز تصویر:px 375*270</span></label>
+                    @Html.EditorFor(model => model.Picture,new { htmlAttributes = new { @class = "txt" } })
+                </div>
+                <div class="clear"></div>
+                <div class="halfInput">
+                    <label>فایل</label>
+                    @Html.EditorFor(model => model.AttachedFile,new { htmlAttributes = new { @class = "txt" } })
+                </div>
+                <div class="halfInput">
+                    <label>ترتیب نمایش</label>
+                    @Html.EditorFor(model => model.ShowOrder,new { htmlAttributes = new { @class = "txt" } })
+                    <span class="alertError">@Html.ValidationMessageFor(model => model.ShowOrder,"")</span>
+                </div>
+                <div class="clear"></div>
+                <div class="btnHolder">
+                    <input type="submit" value="ثبت" class="btn1" />
+                    <a href="/admin/Product/gallery/@Html.DisplayFor(model => model.ProductId)" class="btn3">انصراف</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+

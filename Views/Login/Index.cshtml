@@ -1,0 +1,84 @@
+﻿@using Kaspid.Models;
+@using Kaspid.Models.Utility;
+@model LoginViewModel
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Inside.cshtml";
+}
+@section Title{
+    <title>&#x202b; ورود به پروفایل </title>
+    <meta name="description" content="ورود به پروفایل  " />
+    <meta name="DC.Subject" content="ورود به پروفایل" />
+    <meta name="rating" content="Safe For Kids" />
+    <meta property="og:title" content="ورود به پروفایل" />
+    <meta property="og:site_name" content="@SiteUtility.SiteName " />
+    <meta property="og:description" content="ورود به پروفایل" />
+    <meta property="og:image" content="@SiteUtility.SiteLogo" />
+    <link rel="canonical" href="@SiteUtility.SiteRoot1@Request.RawUrl" />
+}
+@section Head{
+
+}
+
+@section BreadCrumb{
+    <li itemprop="itemListElement" itemscope="itemscope" itemtype="http://schema.org/ListItem">
+        <a href="@SiteUtility.SiteRoot@Request.RawUrl" class="cur" itemprop="item">ورود به پروفایل</a>
+        <meta itemprop="name" content="ورود به پروفایل" />
+        <meta itemprop="position" content="2" />
+    </li>
+}
+@section H1{
+    ورود به پروفایل
+}
+<div class=" main public-box pro-detail-parent">
+    <div class="contact-parent">
+        <div class="contact-l">
+
+
+            @using (Html.BeginForm("Index", "Login", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post))
+            {
+            <div class="sabmit-coment public-form">
+                <span>ورود به پروفایل</span>
+                <ul>
+                    @Html.AntiForgeryToken()
+                    <li class="alertdialog redAlertBox" style="color:red">
+                        @Html.ValidationSummary(true, "")
+                    </li>
+                    <li>
+                        <span>نام کاربری  :</span>
+                        @Html.TextBoxFor(m => m.UserName, new { @class = "txtform",@placeholder="شماره همراه" })
+                        @Html.ValidationMessageFor(m => m.UserName, "", new { @style = "color:red" })
+                    </li>
+                    <li>
+                        <span>رمز عبور :</span>
+                        @Html.PasswordFor(m => m.Password, new { @class = "txtform" })
+                        @Html.ValidationMessageFor(m => m.Password, "", new { @style = "color:red" })
+                    </li>
+                    <li class="hidden">
+                        <span class="select">
+                            @Html.CheckBoxFor(x => x.RememberMe)
+                            <label class="lbl">مرا به خاطر بسپار</label>
+                        </span>
+                    </li>
+                    <li class="clearfix">
+                        <input type="submit" class="btnform btn-send" value="ورود" />
+                    </li>
+                    <li>
+                        <a href="@SiteUtility.SiteRoot1@Url.Action("index","forgotpassword")">رمز عبورم را فراموش کرده ام؟</a>
+                        <a href="@SiteUtility.SiteRoot1/register/@(Request.QueryString["returnUrl"]!=null ? "?returnUrl="+Request.QueryString["returnUrl"]:"")">هنوز در سایت ثبت نام نکرده اید؟</a>
+                    </li>
+                </ul>
+            </div>
+                    }
+
+               
+            </div>
+        </div>
+    </div>
+    @section Scripts{
+
+    }
+
+
+
+

@@ -1,0 +1,54 @@
+﻿@using Kaspid.Models.Utility
+@if (((IEnumerable<object>)TempData["relatedProducts"]).Any())
+{
+    <div class="main pro-detail-bottom">
+        <span class="public-title">محصولات مرتبط</span>
+        <div class="products-list-slider swiper-container">
+            <div class="swiper-wrapper">
+
+                @foreach (object item in (IEnumerable<object>)TempData["relatedProducts"])
+                {
+                    <div class="swiper-slide">
+                        <div class="Amazing-offer-slide-Item">
+
+                            <figure>
+                                <a  href="@SiteUtility.SiteRoot1/product/detail/@item.Prop("Id")/@Function.InsTitleUrl(item.Prop("Title"), item.Prop("TitleURL"))/" title="@item.Prop("Title")" title="@item.Prop("Title")"><img src="@SiteUtility.SiteRoot1@Function.InsNoPic(item.Prop("Picture"),"/content/images/nopic.jpg")" alt="@item.Prop("Title")"></a>
+                            </figure>
+                            <figcaption>
+                                <a href="@SiteUtility.SiteRoot1/product/detail/@item.Prop("Id")/@Function.InsTitleUrl(item.Prop("Title"), item.Prop("TitleURL"))/" title="@item.Prop("Title")">
+                                    <h2>@item.Prop("Title") </h2>
+                                    <h3>@item.Prop("Brand")</h3>
+                                </a>
+                                @if (bool.Parse(item.Prop("HasStock")))
+                                {
+                                    if (item.Prop("Discount") != null && Convert.ToInt32(item.Prop("Discount")) > 0)
+                                    {
+                                        <div class="Price">
+                                            <span>@Function.makeprice(item.Prop("FinalPrice")) تومان</span>
+                                            <del>@Function.makeprice(item.Prop("Price"))</del>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="Price">
+                                            <span>@Function.makeprice(item.Prop("FinalPrice")) تومان</span>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="Price">
+                                        <span>نا موجود</span>
+                                    </div>
+                                }
+                               
+                            </figcaption>
+                        </div>
+                    </div>
+
+                  
+                }
+            </div>
+        </div>
+    </div>
+}

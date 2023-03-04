@@ -1,0 +1,10 @@
+﻿@using Kaspid.Models.Utility;
+@model object
+
+@foreach (object item in (IEnumerable<object>)Model)
+{
+    <h3>@item.Prop("Title") </h3>
+    <ul class="Product-Specifications">
+        @Html.Partial("fieldspergroup", item.Proplist("dynamicFiled"))
+    </ul>
+}

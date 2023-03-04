@@ -1,0 +1,135 @@
+﻿@model PagedList.IPagedList<Kaspid.Models.Product>
+
+@using PagedList.Mvc;
+@using Kaspid.Models.Utility;
+@{
+    ViewBag.Title = Html.Raw(ModulePageContent.Module(Request.RawUrl).Title);
+    Layout = "~/Areas/admin/Views/Shared/_Inside.cshtml";
+}
+@section Breadcrumb{
+    @ViewBag.Title
+}
+@section H1{
+    @ViewBag.Title
+}
+@using (Html.BeginForm("Index","Product", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
+    <a href="#" class="toggleSearch"><i class="mdi mdi-filter-outline"></i></a>
+    <div class="wBox searchBox">
+        <h2 class="wTitle">جستجوی پیشرفته</h2>
+        <div class="wContent">
+            <div class="aSearch">
+                <div class="searchCol">
+                    @Html.Partial("_partialView/_treedropdown", (ViewBag.S_Group != null ? (int?)ViewBag.S_Group : 0))
+                </div>
+                <div class="searchCol">
+                    @Html.TextBox("S_Code", ViewBag.S_Code as string, new { @class = "stxt", @placeholder = "کدمحصول" })
+                </div>
+                <div class="searchCol">
+                    @Html.TextBox("S_Title", ViewBag.S_Title as string, new { @class = "stxt", @placeholder = "نام" })
+                </div>
+                <div class="searchCol">
+                    @Html.DropDownList("S_Brand", new SelectList(ViewBag.Brand, "value", "name"), "برند", new { @class = "stxt" })
+                </div>
+                @*<div class="searchCol">
+                    @Html.DropDownList("S_Type", new SelectList(ViewBag.SendType, "value", "name"), "نحوه ارسال", new { @class = "stxt" })
+                </div>*@
+                <div class="searchCol">
+                    <select id="S_Sort" name="S_Sort" class="stxt">
+                        <option value="1" @(ViewBag.S_Sort == null || ViewBag.S_Sort == 1 ? "selected" : "")> جدیدترین</option>
+                        <option value="2" @(ViewBag.S_Sort != null && ViewBag.S_Sort == 2 ? "selected" : "")> پرفروش ترین</option>
+                        <option value="3" @(ViewBag.S_Sort != null && ViewBag.S_Sort == 3 ? "selected" : "")> کم فروش ترین</option>
+                        <option value="4" @(ViewBag.S_Sort != null && ViewBag.S_Sort == 4 ? "selected" : "")> قدیمی ترین</option>
+                        <option value="5" @(ViewBag.S_Sort != null && ViewBag.S_Sort == 5 ? "selected" : "")> محبوب ترین</option>
+                        <option value="6" @(ViewBag.S_Sort != null && ViewBag.S_Sort == 6 ? "selected" : "")> پربازدید ترین</option>
+                    </select>
+                </div>
+                <div class="searchCol">
+                    @Html.CheckBox("S_EndingStock", (ViewBag.S_EndingStock != null ? (bool?)ViewBag.S_EndingStock : false))
+                    <label for="S_EndingStock">محصولات رو به اتمام</label>
+                </div>
+
+                <div class="searchCol">
+                    @Html.CheckBox("S_EndedStock", (ViewBag.S_EndedStock != null ? (bool?)ViewBag.S_EndedStock : false))
+                    <label for="S_EndedStock">محصولات ناموجود</label>
+                </div>
+                <div class="searchCol">
+                    وضعیت:
+                    @foreach (int item in Enum.GetValues(typeof(AllEnums.Status)))
+                    {
+                        @Html.RadioButton("Status", (byte)item, new { id = Enum.GetName(typeof(AllEnums.Status), item) })
+                        <label for=@Enum.GetName(typeof(AllEnums.Status), item)>@Html.Raw(EnumHelper<AllEnums.Status>.GetDescription(Enum.GetName(typeof(AllEnums.Status), item)))</label>
+                    }
+                </div>
+                <div class="clear"></div>
+                <div class="searchBtns">
+                    <input type="submit" class="btn1" value="جستجو" />
+                    <a href="/admin/Product" class="btn2">بروز رسانی</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="wBox">
+    <div class="wTitle">
+        <h2>
+            لیست @Html.Raw(ModulePageContent.Module(Request.RawUrl).Title.Replace("مدیریت", ""))
+        </h2>
+        <ul class="controlslinks">
+            <li><a href="/admin/Product/create" class="lColor2"><i class="mdi mdi-plus"></i> افزودن</a></li>
+            <li>
+                <a href="/admin/Product/Execl?S_Title=@ViewBag.S_Title&Status=@ViewBag.Status&Group=@ViewBag.S_Group&S_Code=@ViewBag.S_Code&S_Brand=@ViewBag.S_Brand&S_EndingStock=@ViewBag.S_EndingStock&S_Sort=@ViewBag.S_Sort&S_EndedStock=@ViewBag.S_EndedStock" class="lColor6"><i class="mdi mdi-file-excel"></i> خروجی اکسل</a>
+            </li>
+            @*<li><a href="@Url.Action("ImportExcel","ProductColor",new { productId = ViewBag.productId } )" class="lColor5"><i class="mdi mdi-plus"></i> آپلود فایل اکسل</a></li>*@
+
+        </ul>
+        <div class="clear"></div>
+    </div>
+    <div class="wContent">
+        <table class="tbl">
+            <tr>
+                <th>#</th>
+                <th>شناسه</th>
+                <th>دسته بندی</th>
+                <th>عنوان</th>
+                <th>تصویر</th>
+                <th>وضعیت</th>
+                <th>ترتیب نمایش</th>
+                <th>عملیات</th>
+            </tr>
+            @{int i = 0; }
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>‍@Html.Raw((++i).ToString())</td>
+                    <td>@Html.DisplayFor(modelItem => item.Id)</td>
+                    <td>@Html.DisplayFor(modelItem => item.ProductGroup.Title)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Title)</td>
+                    <td><img src="@item.Picture" width="35px" /></td>
+                    <td>@Html.Raw(EnumHelper<AllEnums.AdminStatus>.GetDescription(Enum.GetName(typeof(AllEnums.AdminStatus), item.Status)))</td>
+                    <td>@Html.DisplayFor(modelItem => item.ShowOrder)</td>
+                    <td>
+                        <a href="/admin/Product/edit/@item.Id" class="opr" title="ویرایش"><i class="mdi mdi-pencil"></i></a>
+                        <a href="@Url.Action("Delete","Product",new { id = item.Id })" title="حذف" class="opr" onclick="return confirm('آیا مایل به حذف این رکورد هستید?');"><i class="mdi mdi-delete-outline"></i></a>
+                        <a href="/admin/Product/gallery/@item.Id" class="opr" title="تصاویر"><i class="mdi mdi-camera"></i></a>
+                        <a href="#" class="opr js-quick_view" title="نمایش سریع" data-id="@item.Id"><i class="mdi mdi-currency-usd"></i></a>
+                        <a href="/admin/Product/Faqs/@item.Id" class="opr" title="پرسش ها"><i class="mdi  mdi-cloud-question"></i></a>
+                        <a href="@Url.Action("Index","ProductColor",new { productId = item.Id })" class="opr" title="رنگ"><i class="mdi mdi-format-color-fill"></i></a>
+                        <a href="@Url.Action("Index","Comment",new { productId = item.Id })" class="opr" title="نظرات"><i class="mdi mdi-comment"></i></a>
+
+                    </td>
+                </tr>
+                <tr class="c-quick_view_list">
+                    <td colspan="7"></td>
+                </tr>
+            }
+        </table>
+        @if (Model.PageCount > 1)
+        {
+            @Html.PagedListPager(Model, page => Url.Action("Index", new { page, S_Title = ViewBag.S_Title, Status = ViewBag.Status, Group = ViewBag.S_Group, S_Code = ViewBag.S_Code, S_Brand = ViewBag.S_Brand, S_Type=ViewBag.S_Type, S_EndingStock = ViewBag.S_EndingStock, S_Sort = ViewBag.S_Sort, S_EndedStock = ViewBag.S_EndedStock }))
+        }
+    </div>
+</div>

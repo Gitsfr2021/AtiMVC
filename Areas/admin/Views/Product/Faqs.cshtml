@@ -1,0 +1,64 @@
+﻿@model PagedList.IPagedList<Kaspid.Models.Faq>
+
+@using PagedList.Mvc;
+@using Kaspid.Models.Utility;
+@{
+    ViewBag.Title = "سوالات متداول محصول";
+    Layout = "~/Areas/admin/Views/Shared/_Inside.cshtml";
+}
+@section Breadcrumb{
+    @ViewBag.Title
+}
+@section H1{
+    @ViewBag.Title
+}
+
+<div class="wBox">
+    <div class="wTitle">
+        <h2>
+            لیست پرسش و پاسخ 
+        </h2>
+        <ul class="controlslinks">
+            <li><a href="@Url.Action("CreateFaq",new { id = ViewBag.Id })" class="lColor2"><i class="mdi mdi-plus"></i> افزودن</a></li>
+            <li><a href="/admin/Product/" class="lColor3"><i class="mdi mdi-arrow-left"></i> بازگشت</a></li>
+        </ul>
+        <div class="clear"></div>
+    </div>
+    <div class="wContent">
+        <table class="tbl">
+            <tr>
+                <th>#</th>
+                <th>نویسنده</th>
+                <th>سوال</th>
+                <th>تاریخ ثبت</th>
+                <th>وضعیت</th>
+                <th>ترتیب نمایش</th>
+                <th>عملیات</th>
+            </tr>
+            @{int i = 0; }
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>‍@Html.Raw((++i).ToString())</td>
+                    <td>@Html.DisplayFor(modelItem => item.Name)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Question)</td>
+                    <td>@Html.Raw(Convert.ToDateTime(item.DateX).ToShortPersian())</td>
+                    <td>@Html.Raw(EnumHelper<AllEnums.AdminStatus>.GetDescription(Enum.GetName(typeof(AllEnums.AdminStatus),item.Status)))</td>
+                    <td>@Html.DisplayFor(modelItem => item.ShowOrder)</td>
+
+                    <td>
+                        <a href="/admin/Product/editFaq/@item.Id" class="opr"><i class="mdi mdi-pencil"></i></a>
+                        <a href="@Url.Action("DeleteFaq","Product",new { id = item.Id })" class="opr" onclick="return confirm('آیا مایل به حذف این رکورد هستید?');"><i class="mdi mdi-delete-outline"></i></a>
+                    </td>
+                </tr>
+            }
+        </table>
+
+        @if (Model.PageCount > 1)
+        {
+            @Html.PagedListPager(Model,page => Url.Action("Index",new { page,Title = ViewBag.S_Title,Status = ViewBag.Status }))
+        }
+    </div>
+
+
+</div>

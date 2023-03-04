@@ -1,0 +1,24 @@
+﻿
+@{
+    ViewBag.Title = Html.Raw(ModulePageContent.Module(Request.RawUrl).Title);
+    Layout = "~/Areas/admin/Views/Shared/_Inside.cshtml";
+}
+@section Breadcrumb{
+    @ViewBag.Title
+}
+@section H1{
+    @ViewBag.Title
+}
+<div class="wBox">
+    <div class="wTitle">
+        <h2>
+            لیست @Html.Raw(ModulePageContent.Module(Request.RawUrl).Title.Replace("مدیریت",""))
+        </h2>
+        <div class="clear"></div>
+    </div>
+    @Html.Raw(ViewBag.Tree)
+    @Html.Hidden("hfSource")
+    @Html.Hidden("hfDestin")
+
+</div>
+

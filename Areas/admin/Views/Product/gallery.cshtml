@@ -1,0 +1,80 @@
+﻿@model PagedList.IPagedList<Kaspid.Models.ProductGallery>
+@using PagedList.Mvc;
+@using Kaspid.Models.Utility;
+@{
+    ViewBag.Title = "تصاویر محصول";
+    Layout = "~/Areas/admin/Views/Shared/_Inside.cshtml";
+}
+@section Breadcrumb{
+    <a href="/admin/Product/">@Html.Raw(ModulePageContent.Module("/admin/Product").Title)</a>
+    / @ViewBag.Title
+}
+@section H1{
+    @ViewBag.Title
+}
+@using (Html.BeginForm("Product","gallery",new { id = ViewBag.PId },FormMethod.Post))
+{
+    <div class="hiddend hidden-fields">
+        @Html.Hidden("id",ViewBag.PId as string)
+    </div>
+    @Html.AntiForgeryToken()
+    <a href="#" class="toggleSearch"><i class="mdi mdi-filter-outline"></i></a>
+    <div class="wBox searchBox">
+        <h2 class="wTitle">جستجوی پیشرفته</h2>
+        <div class="wContent">
+            <div class="aSearch">
+                <div class="searchCol">
+                    @Html.TextBox("S_Title",ViewBag.S_Title as string,new { @class = "stxt",@placeholder = "نام" })
+                </div>
+                <div class="clear"></div>
+                <div class="searchBtns">
+                    <input type="submit" class="btn1" value="جستجو" />
+                    <a href="/admin/Product/gallery/@ViewBag.PId" class="btn2">بروز رسانی</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<div class="wBox">
+    <div class="wTitle">
+        <h2>
+            لیست تصاویر (@ViewBag.ProductName)
+        </h2>
+        <ul class="controlslinks">
+            <li><a href="/admin/Product/Creategallery/@ViewBag.Id" class="lColor2"><i class="mdi mdi-plus"></i> افزودن</a></li>
+            <li><a href="/admin/Product/" class="lColor3"><i class="mdi mdi-arrow-left"></i> بازگشت</a></li>
+        </ul>
+        <div class="clear"></div>
+    </div>
+    <div class="wContent">
+        <table class="tbl">
+            <tr>
+                <th>#</th>
+                <th>محصول</th>
+                <th>تصویر</th>
+                <th>عنوان</th>
+                <th>ترتیب نمایش</th>
+                <th>عملیات</th>
+            </tr>
+            @{int i = 0; }
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>‍@Html.Raw((++i).ToString())</td>
+                    <td>@Html.DisplayFor(modelItem => item.Product.Title)</td>
+                    <td><img src="@item.Picture" width="50px" /></td>
+                    <td>@Html.DisplayFor(modelItem => item.Title)</td>
+                    <td>@Html.DisplayFor(modelItem => item.ShowOrder)</td>
+                    <td>
+                        <a href="/admin/Product/Editgallery/@item.Id" class="opr"><i class="mdi mdi-pencil"></i></a>
+                        <a href="@Url.Action("Deletegallery",new { id = item.Id })" class="opr" onclick="return confirm('آیا مایل به حذف این رکورد هستید?');"><i class="mdi mdi-delete-outline"></i></a>
+                    </td>
+                </tr>
+            }
+        </table>
+        @if (Model.PageCount > 1)
+        {
+            @Html.PagedListPager(Model,page => Url.Action("gallery",new { page,S_Title = ViewBag.S_Title }))
+        }
+    </div>
+</div>

@@ -1,0 +1,645 @@
+﻿@using Kaspid.Models.Utility
+@model Kaspid.Models.Product
+@using Kaspid.ViewModels
+@{
+    ViewBag.Title = "Detail";
+    Layout = "~/Views/Shared/_inside.cshtml";
+}
+@{
+    ViewBag.Title = "Detail";
+    Layout = "~/Views/Shared/_Inside.cshtml";
+    List<Kaspid.Models.Faq> faqs = ViewData["ProductFaq"] as List<Kaspid.Models.Faq>;
+    IEnumerable<object> Rlproducts = ViewData["RlProduct"] as IEnumerable<object>;
+    IEnumerable<Kaspid.Models.ProductFeatureFaq> featureFaqs = ViewData["productFeatureFaq"] as IEnumerable<Kaspid.Models.ProductFeatureFaq>;
+    IEnumerable<object> Buying = ViewData["Buying"] as IEnumerable<object>;
+    }
+
+
+@section Title{
+    <title>@Model.PageTitle</title>
+    <meta name="description" content="@Model.PageDescription" />
+    <meta name="DC.Subject" content="@Model.PageDCSubject" />
+    <meta name="rating" content="Safe For Kids" />
+    <meta property="og:title" content="@Model.Title" />
+    <meta property="og:site_name" content="@SiteUtility.SiteName " />
+    <meta property="og:description" content="@Model.PageDescription" />
+    <meta property="og:image" content="@SiteUtility.SiteLogo" />
+    <link rel="canonical" href="@SiteUtility.SiteRoot1@Request.RawUrl" />
+}
+
+@section head{
+    <link href="~/Content/css/highcharts.css" rel="stylesheet" />
+    <link href="~/Content/css/jquery.range.css" rel="stylesheet" />
+
+}
+
+@section BreadCrumb{
+
+    @Html.Raw(ViewBag.BreadCrump)
+
+}
+
+@section H1{
+    @Model.Title
+}
+<div class=" main public-box pro-detail-parent">
+    <div class="pro-detail-up">
+        <div class="pro-detail-up-r">
+            <div class="pro-detail-up-r-img">
+                <figure>
+                    <img src="@SiteUtility.SiteRoot1@Function.InsNoPic(Model.Picture, "/Content/images/nopic.jpg")" alt="@Model.Title" title="@Model.Title" />
+                    <div class="zoom-img">
+                        <img src="" alt="">
+                    </div>
+                </figure>
+                <ul class="pro-detail-up-r-img-list">
+                    <li>
+                        @if (SiteUtility.UserIsLogin && SiteUtility.UserIsLogin)
+                        {
+                            <a onclick="AddToFavorite(@Model.Id)" class="I-M-Item " data-tooltip="افزودن به علاقه مندی ها"><img src="~/Content/images/like-icon.png" /></a>
+                        }
+                        else
+                        {
+                            <a data-popup="login" class="I-M-Item login" data-tooltip="افزودن به علاقه مندی ها"><img src="~/Content/images/like-icon.png" /></a>
+                        }
+                    </li>
+                    <li>
+                        <a class="social-pro-detail"><img src="~/Content/images/share-icon.png" /></a>
+
+                    </li>
+                    <li>
+                        @if (SiteUtility.UserIsLogin && SiteUtility.UserIsLogin)
+                        {
+                            <a data-popup="pop_navigation" class="I-M-Item Notification @(Model.SelectedProductColor==null || Model.SelectedProductColor.HasStock ? "hidden" :"")" data-tooltip="به من اطلاع بده"><img src="~/Content/images/alarm-icon.png" /></a>
+                        }
+                        else
+                        {
+                            <a data-popup="login" class="I-M-Item Notification @(Model.SelectedProductColor==null || Model.SelectedProductColor.HasStock ? "hidden" :"")" data-tooltip="به من اطلاع بده"><img src="~/Content/images/alarm-icon.png" /></a>
+                        }
+                    </li>
+                    <li>
+                        <a data-popup="chart" class="I-M-Item Chart chart-pro-detail" data-tooltip="نمودار قیمت"><img src="~/Content/images/chart-icon.png" /></a>
+                    </li>
+                    <li>
+                        <a href="@SiteUtility.SiteRoot1/compare/@Model.Id/"><img src="~/Content/images/copmare-icon.png" /></a>
+                    </li>
+                </ul>
+            </div>
+            <div class="pro-detail-up-r-info">
+                <h2>
+                    <span>@Model.Title</span>
+                    <span>@Model.entitle</span>
+                </h2>
+                <div class="pro-detail-up-r-info-catstar">
+                    <span>دسته بندی:<label>@Model.ProductGroup.Title</label></span>
+                    <p class="score-user @(Convert.ToDecimal(ViewBag.RateProduct)>0  ? "":"hidden")"> @ViewBag.CountRateProduct</p>
+                    <div class="score-star">
+                        <div class="star_rate" style="--rate:@ViewBag.RateProduct;"></div>
+                    </div>
+                </div>
+                <div class="Product-features">
+                    <span>ویژگی‌های محصول</span>
+                    <ul>
+                        @Html.Raw(Model.Feature)
+
+                    </ul>
+                    @if (((IEnumerable<object>)ViewBag.ProductColor).Any())
+                    {
+                        <div class="color-li">
+                            <span>رنگ:</span>
+                            @foreach (object item in ViewBag.ProductColor)
+                            {
+                                <a onclick="price(@item.Prop("Id"))">
+                                    <span class="color_item" style="--color:@item.Prop("ColorCode")">
+
+                                    </span>
+                                </a>
+                                @*<span class="color_item" style="--color:#ffffff"></span>*@
+                            }
+
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="pro-detail-up-l">
+            <figure><img src="@SiteUtility.SiteRoot1@Function.InsNoPic(Model.Picture, "/Content/images/nopic.jpg")" alt="@Model.Brand.Title" /></figure>
+            <div class="pro-detail-up-l-basket-box">
+                <ul>
+                    <li>
+                        <ul>
+                            <li>
+                                برند @Model.Brand.Title
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <div class="pro-detail-up-l-basket-box-price">
+                            <div class="price-box">
+                                @if (Convert.ToInt32(Model.IsStock) > 0)
+                                {
+                                    if (Model.Discount != 0)
+                                    {
+                                        <del id="del-price">@Function.makeprice(Model.Price)<label>تومان</label></del>
+
+                                    }
+                                    <span id="price">@Function.makeprice(Model.FinalPrice) <label>تومان</label></span>
+                                }
+                                else
+                                { <span>ناموجود</span>}
+
+                            </div>
+                            @if (Model.FinalPrice != Model.Price)
+                            {
+                                <span class="off">@Model.Discount%</span>
+                            }
+
+                        </div>
+                    </li>
+                    <li>
+                        <div class="B-R-Number">
+                            <span class="Plus">+</span>
+                            <input type="number" class="N-Txt" min="1" max="100" value='1'  />
+                            <span class="Minus">-</span>
+                        </div>
+                    </li>
+                    <li>
+                        @if (Model.SelectedProductColor != null)
+                        {
+                            if (Model.SelectedProductColor.HasStock)
+                            {
+                                <a href="@SiteUtility.SiteRoot1/basket/add/@Model.SelectedProductColor.Id/1/" class="basket-box add__basket_detail">افزودن به سبد خرید</a>
+                            }
+                        }
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="pro-detail-tab-parent" data-parent="D-parent">
+        <ul class="pro-detail-tabbtn" data-ptab="P-Tab">
+            <li>
+                <a class="active" href="#tab1" data-tab="Tab-Item">توضیحات محصول</a>
+            </li>
+            <li>
+                <a href="#tab2" data-tab="Tab-Item">مشخصات محصول</a>
+            </li>
+            <li>
+                <a href="#tab3" data-tab="Tab-Item">راهنمای استفاده</a>
+            </li>
+            <li>
+                <a href="#tab4" data-tab="Tab-Item">درباره برند</a>
+            </li>
+            <li>
+                <a href="#tab5" data-tab="Tab-Item">پرسش و پاسخ</a>
+            </li>
+        </ul>
+        <div class="pro-detail-tabbox active" id="tab1" data-tlist="Tab-List">
+            <div class="description-tabbox">
+                <p>@Html.Raw(Model.HtmlBody)</p>
+            </div>
+        </div>
+        <div class="pro-detail-tabbox" id="tab2" data-tlist="Tab-List">
+            @Html.Partial("fields", ViewBag.DynamicFields as object)
+
+        </div>
+        <div class="pro-detail-tabbox" id="tab3" data-tlist="Tab-List">
+            <div class="description-tabbox">
+                <p>@Html.Raw(Model.Help) </p>
+            </div>
+        </div>
+        <div class="pro-detail-tabbox" id="tab4" data-tlist="Tab-List">
+            <div class="about-brand-tabbox">
+                <figure><img alt="@Model.Brand.Picture" src="@SiteUtility.SiteRoot1@Function.InsNoPic(Model.Brand.Picture, "/Content/images/nopic.jpg")" /></figure>
+                <ul>
+                    @Html.Raw(Model.Brand.Description)
+                </ul>
+            </div>
+        </div>
+        <div class="pro-detail-tabbox" id="tab5" data-tlist="Tab-List">
+            <div class="question-tab-list">
+                <ul>
+                    @foreach (var item in faqs)
+                    {
+                        <li>
+                            <h3 class="question">
+
+                                @item.Question
+                            </h3>
+                            <div class="answerPane">
+                                <div class="answer">
+                                    @item.Answer
+                                </div>
+                            </div>
+                            <div class="date-question">
+                                <span>@item.Name</span>
+                                <span>تاریخ درج: @item.DateX.ToShortPersian()</span>
+                            </div>
+                        </li>
+
+                    }
+
+                </ul>
+            </div>
+            @using (Ajax.BeginForm("Faq", new { }, new AjaxOptions { UpdateTargetId = "targetid", InsertionMode = InsertionMode.Replace, HttpMethod = "POST", LoadingElementId = "loading2" }, new { style = "" }))
+            {
+                <div id="targetid">
+                    @Html.Partial("_Faq", new Kaspid.Models.Faq())
+                </div>
+                <div id="loading2">
+                    <figure>
+                        <img src="@SiteUtility.SiteRoot1/Content/images/loader.gif" />
+                        <figcaption>
+                            درحال ثبت اطلاعات....
+                        </figcaption>
+                    </figure>
+                </div>
+            }
+
+
+        </div>
+    </div>
+    <div class="pro-detail-comment-parent">
+        <div class="pro-detail-comment-up">
+            <div class="pro-detail-comment-up-r">
+                <span>نظرات کاربران</span>
+                <div class="clear"></div>
+                @foreach (object comment in (IEnumerable<object>)ViewBag.Comments)
+                {
+                    <div class="comment-show-item">
+                        <div class="col-right">
+                            <p>@comment.Prop("Name")</p>
+
+                        </div>
+                        <div class="col-left">
+                            <div class="comment-info">
+                                <div class="comment-context">
+                                    @comment.Prop("TextX")
+
+                                </div>
+                                <div class="coment-name">@comment.Prop("Title")</div>
+                                <div class="date">@Convert.ToDateTime(comment.Prop("DateX")).ToPersianWithNamedMonth()</div>
+                                <div class="clear"></div>
+
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="pro-detail-comment-up-l">
+                <a class="send-comment">افزودن نظر جدید</a>
+                @if (SiteUtility.UserIsLogin && SiteUtility.UserIsSiteUser)
+                {
+
+                    using (Ajax.BeginForm("sendComment", "product", new { id = Model.Id }, new AjaxOptions { UpdateTargetId = "targetidFaq", InsertionMode = InsertionMode.Replace, HttpMethod = "POST", LoadingElementId = "loading" }, new { @class = "coment-l-col" }))
+                    {
+                        <div id="targetidFaq">@Html.Partial("_ProductComment", new Kaspid.Models.Comment())</div>
+                        <div id="loading">
+                            <figure>
+                                <img src="@SiteUtility.SiteRoot1/Content/images/loader.gif" />
+                                <figcaption>
+                                    درحال ثبت اطلاعات....
+                                </figcaption>
+                            </figure>
+                        </div>
+                    }
+                }
+                else
+                {
+            <div class="send-comment_login">
+                <div class="sabmit-coment public-form">
+                    <p>
+                        برای ثبت نظرات، لازم است ابتدا وارد حساب کاربری
+                        خود شوید
+                    </p>
+                </div>
+                <a href="@SiteUtility.SiteRoot1/login/?returnUrl=/@Request.RawUrl/" class="btn login-btn">ورود به حساب کاربری</a>
+            </div>
+                   
+                }
+
+            </div>
+        </div>
+    </div>
+</div>
+@Html.Partial("_relatedProducts")
+<div class="popup-public popup-social">
+    <div class="popup-body">
+        <h3>اشتراک گذاری</h3>
+        <a href="#" class="popup-close"></a>
+        <p>با استفاده از روش‌های زیر می‌توانید این صفحه را با دوستان خود به اشتراک بگذارید. </p>
+        <ul>
+            <li>
+                <a href="whatsapp://send?text=@Model.Title@SiteUtility.SiteRoot1+Request.RawUrl">
+                    <img src="~/Content/images/whatsapp1.png" alt="#">
+                </a>
+            </li>
+            <li>
+                <a href="https://plus.google.com/share?url=@SiteUtility.SiteRoot1@Request.RawUrl">
+                    <img src="~/Content/images/instagram.png" alt="#">
+                </a>
+            </li>
+            <li>
+                <a href="https://www.linkedin.com/shareArticle?mini=true&url=@SiteUtility.SiteRoot1@Request.RawUrl&title=@Model.Title">
+                    <img src="~/Content/images/linkdin1.png" alt="#">
+                </a>
+            </li>
+            <li>
+                <a href="https://telegram.me/share/url?text=@Model.Title&url=@SiteUtility.SiteRoot1@Request.RawUrl">
+                    <img src="~/Content/images/twiter1.png" alt="#">
+                </a>
+            </li>
+            <li>
+                <a href="http://www.facebook.com/share.php?u=@SiteUtility.SiteRoot1@Request.RawUrl">
+                    <img src="~/Content/images/facebook1.png" alt="#">
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="popup-public popup-chart">
+    <div class="popup-body">
+        <h3>نمودار قیمت</h3>
+        <a href="#" class="popup-close"></a>
+        <div id="container" data-highcharts-chart="0"></div>
+    </div>
+</div>
+<div class="popup-public pop_navigation">
+    <div class="popup-body">
+        <header class="Title">
+            <h3>به من اطلاع بده</h3>
+        </header>
+        <div class="c-popup_body">
+            @using (@Ajax.BeginForm("AlertStock", "Product", null, new AjaxOptions { HttpMethod = "POST", OnSuccess = "alert('درخواست شما با موفقیت ثبت گردید');$(this).closest('.popup__overlay').removeClass('active')", LoadingElementId = "loading", }))
+            {
+                if (Model.SelectedProductColor != null)
+                {
+                    @Html.Partial("_alertstock", new Kaspid.Models.AlertStock(Model.SelectedProductColor.Id))
+                }
+                else
+                {
+                    @Html.Partial("_alertstock", new Kaspid.Models.AlertStock())
+                }
+                <div id="loading">
+                    <figure>
+                        <img src="~/Content/images/loader.gif" />
+                        <figcaption>
+                            درحال ثبت اطلاعات....
+                        </figcaption>
+                    </figure>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+@*<div class="popup-public popup-favorite">
+        <div class="popup-body">
+            <a href="#" class="popup-close"></a>
+            سیبس
+        </div>
+    </div>*@
+@section Scripts{
+    <script src="~/Content/js/jquery.range-min.js"></script>
+    <script src="~/Content/js/highcharts.js"></script>
+    <script>
+        $(document).ready(function () {
+             //popup
+            $(".favorite").click(function () {
+                $(".popup-favorite").addClass('showing');
+                return false;
+            });
+              $(".social-pro-detail").click(function () {
+                $(".popup-social").addClass('showing');
+                return false;
+            });
+            $(".sendComment-pro-detail").click(function () {
+                $(".popup-sendComment").addClass('showing');
+                return false;
+            });
+            $(".chart-pro-detail").click(function () {
+                $(".popup-chart").addClass('showing');
+                return false;
+            });
+            $(".popup-close").click(function () {
+                $(".popup-public").removeClass('showing');
+                return false;
+            });
+
+            $('.send-comment').click(function () {
+                $(this).siblings('.send-comment_login').toggleClass('show');
+
+            });
+
+            $(".Plus").click(function () {
+                var input = $(this).parents(".B-R-Number").find(".N-Txt");
+                var num = input.val();
+                var newNum = parseInt(num) + 1;
+                if (Model.SelectedProductColor != null) 
+                {$('.add__basket_detail').attr("href",'@SiteUtility.SiteRoot1/basket/add/@(Model.SelectedProductColor!=null ? Model.SelectedProductColor.Id:0)/'+newNum+"/");}
+                input.val(newNum);
+            });
+            $(".Minus").click(function () {
+                var input = $(this).parents(".B-R-Number").find(".N-Txt");
+                var num = input.val();
+                var newNum = parseInt(num) - 1;
+                if (newNum < 1) {
+                    newNum = 1;
+                }
+                if (Model.SelectedProductColor != null)
+                { $('.add__basket_detail').attr("href", '@SiteUtility.SiteRoot1/basket/add/@(Model.SelectedProductColor!=null ? Model.SelectedProductColor.Id:0)/' + newNum + "/"); }
+                    input.val(newNum);
+                });
+            //star
+            var starsRate = $('.score-star .star_rate').get(0).style.getPropertyValue('--rate');
+            var startRating = false;
+            $('.score-star .star_rate').mousedown(function (e) {
+                startRating = true;
+                if (!$(this).children('.rate-noti').length) {
+                    $(this).append('<span class="rate-noti"></span>');
+                }
+                applyStarRating($(this), e);
+            }).mousemove(function (e) {
+
+                if (!startRating) {
+                    return;
+                }
+                applyStarRating($(this), e);
+            });
+            function applyStarRating(thisStar, e) {
+                var rate = ((e.pageX - thisStar.offset().left) * 5 / parseInt(thisStar.css('width')) + .1).toFixed(1);
+                if (parseFloat(rate) > 5.0) {
+                    rate = '5.0';
+                }
+                thisStar.children('.rate-noti').text(rate).css('left', (e.pageX - thisStar.offset().left));
+                thisStar.get(0).style.setProperty('--rate', rate);
+                $('#ctl00_ctl00_content_content_hfRate').val(rate);
+            }
+            $(document).mouseup(function () {
+                if (startRating) {
+                    startRating = false;
+                    $(' .star_rate .rate-noti').remove();
+                    starsRate = $('.star_rate').get(0).style.getPropertyValue('--rate');
+                    RateProduct(starsRate);
+
+                }
+            });
+
+        });
+        function likePro(id) {
+            $.ajax({
+                url: "/product/LikeCountPro",
+                data: { id: id },
+                type: 'POST',
+                async: false,
+                cache: false,
+                success: function (result) {
+                    $(".likePro").addClass("active");
+                    $(".likePro").removeAttr("onclick");
+                }
+            });
+            };
+
+    let price = (id) => {
+       
+            $.ajax({
+                url: "@Url.Action("Price")",
+                type: 'POST',
+                data: { id: id },
+                success: function (result) {
+                    if (result.includes("-")) {
+
+                        var results = result.split("-"); 
+                        $("#del-price").removeClass("hidden");
+                        $("#del-price").html(results[0]);
+                        $("#price").html(results[1] + " تومان ");
+                        if (results[0] == "ناموجود") {
+                            $(".notifications").parent("li").removeClass("hidden");
+                            $(".add__basket_detail").addClass("hidden");
+                        } else {
+                            $(".add__basket_detail").removeClass("hidden");
+                            $(".notifications").parent("li").addClass("hidden");
+                            $(".add__basket_detail").attr("href",
+                                "@SiteUtility.SiteRoot1/basket/add/" + id + "/" + 1);
+                        }
+                    } else {
+                        $("#del-price").addClass("hidden");
+                        $("#price").html(result + " تومان ");
+                        $(".add__basket_detail").attr("href", "@SiteUtility.SiteRoot1/basket/add/" + id + "/" + 1);
+                    }
+                },
+            });
+        }
+        let AddToFavorite = (id) => {
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("AddToFavorite", "Product")",
+                data: { id: id },
+                dataType: "json",
+                success: function(result) {
+                    if (result === "success") {
+                        Swal.fire(
+                            'انجام گردید',
+                            'محصول مورد نظر با موفقیت به لیست علاقه مندی ها اضافه گردید',
+                            'success'
+                        );
+                    } else if (result === "available") {
+                        Swal.fire(
+                            'موجود میباشد',
+                            'شما این محصول را قبلا به علاقه مندی های خود اضافه کرده اید',
+                            'warning'
+                        );
+                    }
+                }
+            });
+            }
+
+        //chart price
+        document.addEventListener('DOMContentLoaded', function () {
+            var myChart = Highcharts.chart('container', {
+
+                title: {
+                    text: 'نمودار وضعیت فروش',
+                    style: {
+                        color: '#3562f1',
+                        fontWeight: 'bold'
+                    }
+                },
+                yAxis: {
+                    title: {
+                        text: 'بر حسب قیمت (تومان)'
+                    }
+                },
+
+                xAxis: {
+                    categories: [@Html.Raw(ViewBag.DateChart)]
+                },
+                tooltip: {
+                    useHTML: true,
+                  //  pointFormat: '<div class="red"><b>شنبه 25 بهمن 98</b><br/> {point.y}{series.name} </div> ',
+                    //   pointFormat: '@Html.Raw(ViewBag.DesChart)',
+                },
+
+                legend: {
+                    layout: 'vertical',
+                    align: 'right',
+                    verticalAlign: 'middle'
+                },
+
+                series: [{
+                    name: 'قیمت',
+                    data: [@ViewBag.PriceCHart],
+                    color: '#bbcbff'
+
+                },
+
+                {
+                }],
+
+                responsive: {
+                    rules: [{
+                        condition: {
+                            maxWidth: 500
+                        },
+                        chartOptions: {
+                            legend: {
+                                layout: 'horizontal',
+                                align: 'center',
+                                verticalAlign: 'bottom'
+                            }
+                        }
+                    }]
+                }
+            });
+        });
+         //question
+            $('.question').click(function () {
+                $(this).toggleClass('open').next('.answerPane').slideToggle();
+            })
+    
+     let RateProduct = (rate) => {
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("RateProduct", "Product")",
+                data: { data: @Model.Id, rate: rate },
+                dataType: "json",
+                success: function(result) {
+                    if (result === "success") {
+                        Swal.fire(
+                            'انجام گردید',
+                            'امتیاز شما با موفقیت ثبت گردید',
+                            'success'
+                        );
+                    } else if (result === "error") {
+                        Swal.fire(
+                            'امتیاز داده شده',
+                            'شما از قبل به این محصول امتیاز داده اید',
+                            'warning'
+                        );
+                    }
+                }
+            });
+        }
+    </script>
+}
+
+

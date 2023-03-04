@@ -1,0 +1,121 @@
+﻿@model Kaspid.Models.ProductGroup
+@{
+    ViewBag.Title = Html.Raw(ModulePageContent.Module("ProductGroup").Title);
+    Layout = "~/Areas/admin/Views/Shared/_Inside.cshtml";
+}
+@section Breadcrumb{
+    @ViewBag.Title
+}
+@section H1{
+    @ViewBag.Title
+}
+
+
+@using (Html.BeginForm())
+{
+    <div class="hiddend hidden-fields">
+        @Html.HiddenFor(model => model.Id)
+    </div>
+    @Html.AntiForgeryToken()
+
+    <div class="wBox">
+        <h2 class="wTitle"> ویرایش @Html.Raw(ModulePageContent.Module("ProductGroup").Title.Replace("مدیریت", "")) </h2>
+        <div class="wContent">
+            <div class="form">
+                <div class="alertdialog aColor2">
+                    <i class="mdi mdi-alert-circle"></i>
+                    <div class="msg">
+                        کاربر گرامی، پر کردن فیلدهای ستاره دار الزامی است.
+                        @Html.ValidationSummary(true, "")
+                    </div>
+                </div>
+                <div class="clear"></div>
+                <div class="halfInput">
+                    <label> شاخه والد</label>
+                    @Html.EditorFor(model => model.ParentId, new { DDLTree = ViewBag.Tree, htmlAttributes = new { @class = "txt" } })
+                    <span class="alertError">@Html.ValidationMessageFor(model => model.ParentId, "")</span>
+                </div>
+                <div class="clear"></div>
+                <div class="halfInput">
+                    <label>عنوان <span class="red">*</span></label>
+                    @Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class = "txt" } })
+                    <span class="alertError"> @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })</span>
+                </div>
+                <div class="halfInput">
+                    <label>تصویر<span class="imgSize">سایز تصویر بنر لیست محصولات:px 902*127</span></label>
+                    @Html.EditorFor(model => model.Picture, new { htmlAttributes = new { @class = "txt" } })
+                </div>
+                <div class="clear"></div>
+                @*<div class="halfInput">
+                    <label>تصویر صفحه پیشنهاد ویژه<span class="imgSize">سایز تصویر:px 145*145</span></label>
+                    @Html.EditorFor(model => model.Picture1, new { htmlAttributes = new { @class = "txt" } })
+                </div>
+                <div class="halfInput">
+                    <label>بنر صفحه پیشنهاد ویژه<span class="imgSize">سایز تصویر:px 388*319</span></label>
+                    @Html.EditorFor(model => model.offerPic, new { htmlAttributes = new { @class = "txt" } })
+                </div>
+                <div class="clear"></div>*@
+                <div class="halfInput">
+                    <label> تگ PageDCSubject</label>
+                    @Html.EditorFor(model => model.PageDCSubject, new { htmlAttributes = new { @class = "txt" } })
+                </div>
+                <div class="halfInput">
+                    <label> تگ PageDescription</label>
+                    @Html.EditorFor(model => model.PageDescription, new { htmlAttributes = new { @class = "txt" } })
+                </div>
+                <div class="clear"></div>
+                <div class="halfInput">
+                    <label> عنوان آدرس<span class="red">*</span></label>
+                    @Html.EditorFor(model => model.TitleURL, new { htmlAttributes = new { @class = "txt" } })
+                    <span class="alertError"> @Html.ValidationMessageFor(model => model.TitleURL, "", new { @class = "text-danger" })</span>
+                </div>
+                <div class="halfInput">
+                    <label>عنوان صفحه<span class="red">*</span></label>
+                    @Html.EditorFor(model => model.PageTitle, new { htmlAttributes = new { @class = "txt" } })
+                    <span class="alertError"> @Html.ValidationMessageFor(model => model.PageTitle, "", new { @class = "text-danger" })</span>
+                </div>
+                @*<div class="clear"></div>
+                <div class="halfInput">
+                    <label>برند پیشنهادی<span class="imgSize">انتخاب کنید که محصولات پیشنهادی در صفحه فیلتر محصولات از کدام برند نمایش یابند</span></label>
+                    @Html.DropDownListFor(model => model.BrandId, new SelectList(ViewBag.Brand, "value", "name"), "برند مورد نظر را انتخاب نمایید", new { @class = "txt" })
+                </div>*@
+                <div class="halfInput">
+                    <div class="hRight">
+                        <label>ترتیب نمایش</label>
+                        @Html.EditorFor(model => model.ShowOrder, new { htmlAttributes = new { @class = "txt" } })
+                        <span class="alertError">@Html.ValidationMessageFor(model => model.ShowOrder, "")</span>
+                    </div>
+                    <div class="hLeft">
+                        <label>وضعیت</label>
+                        <div class="rdbholder">
+                            @foreach (int item in Enum.GetValues(typeof(AllEnums.Status)))
+                            {
+                                @Html.RadioButtonFor(model => model.Status, (byte)item, new { id = Enum.GetName(typeof(AllEnums.Status), item) })
+                                <label for=@Enum.GetName(typeof(AllEnums.Status), item)>@Html.Raw(EnumHelper<AllEnums.Status>.GetDescription(Enum.GetName(typeof(AllEnums.Status), item)))</label>
+                            }
+                        </div>
+                    </div>
+                </div>
+                @*<div class="clear"></div>
+                <div class="halfInput">
+                    <label></label>
+                    <div class="checkbox">
+                        @Html.CheckBoxFor(model => model.isOffer, new { id = "cheakbx" })
+                        <label for='cheakbx'>گروه صفحه پیشنهاد ویژه</label>
+                    </div>
+                </div>*@
+                <div class="clear"></div>
+                <div class="fullInput">
+                    <label>توضیحات</label>
+                    @Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "txt" } })
+                </div>
+                <div class="btnHolder">
+                    <input type="submit" value="ثبت" class="btn1" />
+                    <a href="/admin/ProductGroup" class="btn3">انصراف</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+}
+
